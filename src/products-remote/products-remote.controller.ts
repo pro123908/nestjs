@@ -19,9 +19,8 @@ export class ProductsRemoteController {
   async addProduct(
     @Body('title') title: string,
     @Body('description') description: string,
-    @Body('price') price: number,
   ) {
-    return await this.productService.addProduct(title, description, price);
+    return await this.productService.addProduct(title, description, 10);
   }
 
   // Get all products
@@ -48,13 +47,13 @@ export class ProductsRemoteController {
     @Param('id') prodId: string,
     @Body('title') title: string,
     @Body('description') description: string,
-    @Body('price') price: number,
+    // @Body('price') price: number,
   ) {
     return await this.productService.updateProduct(
       prodId,
       title,
       description,
-      price,
+      10,
     );
   }
 }

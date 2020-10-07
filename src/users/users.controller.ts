@@ -24,8 +24,9 @@ export class UsersController {
     @Body('name') name: string,
     @Body('email') email: string,
     @Body('password') password: string,
+    @Body('image') image: String,
   ) {
-    return await this.userService.registerUser(name, email, password);
+    return await this.userService.registerUser(name, email, password, image);
   }
 
   @UseGuards(LocalAuthGuard)
@@ -36,6 +37,7 @@ export class UsersController {
     @Request() req,
   ) {
     // return await this.userService.loginUser(email, password);
+    console.log('Login => ', req.user);
     return this.authService.login(req.user);
   }
 

@@ -31,10 +31,11 @@ export class ProductsRemoteService {
   async getProducts() {
     // returning the copy of products array
     const products = await this.productModel.find().exec();
+    console.log('Products => ', products);
     return products.map(prod => ({
       id: prod.id,
       title: prod.title,
-      description: prod.title,
+      description: prod.description,
       price: prod.price,
     }));
   }
@@ -54,11 +55,18 @@ export class ProductsRemoteService {
 
   async deleteProduct(productId: string) {
     // deleting the product with the given id
-    const result = await this.productModel.deleteOne({ _id: productId }).exec();
 
-    if (result.n === 0) throw new NotFoundException('Product Not Found');
+    try {
+      const result = await this.productModel
+        .deleteOne({ _id: productId })
+        .exec();
+      if (result.n === 0) throw new NotFoundException('Product Not Found');
+      console.log(result);
 
-    return await this.getProducts();
+      return { productId };
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async updateProduct(
