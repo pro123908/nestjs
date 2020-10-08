@@ -1,43 +1,82 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { timeStamp } from 'console';
+
 import { Model } from 'mongoose';
+import { User } from 'src/users/users.model';
 import { Product } from './products-remote.model';
 
 @Injectable()
 export class ProductsRemoteService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<Product>,
+    @InjectModel('User') private readonly userModel: Model<User>,
   ) {}
   products: Product[] = []; // Setting the default Value to []
 
-  async addProduct(title: string, description: string, price: number) {
+  async addProduct(
+    email: string,
+    title: string,
+    description: string,
+    price: number,
+  ) {
     // Creating the product using schema
     const newProduct = new this.productModel({
+      email,
       title,
       description,
       price,
     });
 
+    console.log('Email => ', email);
+
     const result = await newProduct.save();
-    return {
-      id: result.id,
-      title: result.title,
-      description: result.description,
-      price: result.price,
-    };
+    console.log('Result -> ', result);
+    const user = await this.userModel.findOne({ email: email });
+    console.log('--- user ---', user);
+    if (user) {
+      await user.products.push(newProduct);
+      await user.save();
+
+      return {
+        id: result.id,
+        title: result.title,
+        description: result.description,
+        price: result.price,
+        userImage: user.image,
+      };
+    }
+
+    // return ;
   }
 
   async getProducts() {
     // returning the copy of products array
     const products = await this.productModel.find().exec();
     console.log('Products => ', products);
-    return products.map(prod => ({
-      id: prod.id,
-      title: prod.title,
-      description: prod.description,
-      price: prod.price,
-    }));
+    const productsWithUser = await Promise.all(
+      products.map(async prod => {
+        const user = await this.userModel.findOne({ email: prod.email });
+        console.log('User? ? ', user);
+        // return {
+        //   id: prod.id,
+        //   title: prod.title,
+        //   description: prod.description,
+        //   price: prod.price,
+        // };
+        if (user) {
+          console.log('iside ');
+          return {
+            id: prod.id,
+            title: prod.title,
+            description: prod.description,
+            price: prod.price,
+            userImage: user.image,
+          };
+        }
+      }),
+    );
+
+    return productsWithUser;
   }
 
   async getProduct(productId: string) {
@@ -81,9 +120,18 @@ export class ProductsRemoteService {
     if (desc) updatedProduct.description = desc;
     if (price) updatedProduct.price = price;
 
-    updatedProduct.save();
+    await updatedProduct.save();
 
-    return updatedProduct;
+    const user = await this.userModel.findOne({ email: updatedProduct.email });
+    if (user) {
+      return {
+        id: updatedProduct.id,
+        title: updatedProduct.title,
+        description: updatedProduct.description,
+        price: updatedProduct.price,
+        userImage: user.image,
+      };
+    }
   }
 
   private async findTheProduct(productId): Promise<Product> {

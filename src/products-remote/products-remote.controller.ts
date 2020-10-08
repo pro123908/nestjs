@@ -17,10 +17,11 @@ export class ProductsRemoteController {
   // Add a product
   @Post()
   async addProduct(
+    @Body('email') email: string,
     @Body('title') title: string,
     @Body('description') description: string,
   ) {
-    return await this.productService.addProduct(title, description, 10);
+    return await this.productService.addProduct(email, title, description, 10);
   }
 
   // Get all products

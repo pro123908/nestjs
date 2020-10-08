@@ -29,7 +29,8 @@ export class UsersService {
         image: result.image,
       };
     } catch (error) {
-      console.log(error.errors.email.properties.type);
+      console.log(error);
+      if (error.errors.email) console.log(error.errors.email.properties.type);
       if (error.errors.email.properties.type === 'unique') {
         throw new HttpException('Email Already Exists', HttpStatus.FORBIDDEN);
       }
@@ -37,9 +38,25 @@ export class UsersService {
   }
 
   async loginUser(email: string, password: string) {
-    const user = await this.userModel.findOne({ email: email }).exec();
-    console.log(user);
+    try {
+      // const user = await this.userModel
+      //   .findOne({ email: email })
+      //   .populate('products')
+      //   .exec();
 
-    return user;
+      const user = await this.userModel.findOne({ email: email }).exec();
+
+      console.log('inside userServices', user);
+      if (!user) {
+        return null;
+      }
+      return user;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Invalid Email or Password',
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }

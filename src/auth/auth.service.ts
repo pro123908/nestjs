@@ -10,6 +10,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
+    console.log('inside auth.service', username, password);
     const user = await this.usersService.loginUser(username, password);
     // if (user && user.password === pass) {
     //   const { password, ...result } = user;
@@ -19,8 +20,10 @@ export class AuthService {
     if (user && user.password === password) {
       //   const { password, ...result } = user;
       //   return result;
-      return user;
+      return { user: user };
     }
+    if (user && user.password !== password)
+      return { user: null, message: 'Invalid Email or Password' };
 
     return null;
   }
@@ -31,6 +34,7 @@ export class AuthService {
       accessToken: this.jwtService.sign(payload),
       email: user.email,
       name: user.name,
+      image: user.image,
     };
   }
 }

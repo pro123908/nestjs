@@ -37,7 +37,8 @@ export class UsersController {
     @Request() req,
   ) {
     // return await this.userService.loginUser(email, password);
-    console.log('Login => ', req.user);
+    // console.log('Login => ', req.user);
+    console.log('inside userController');
     return this.authService.login(req.user);
   }
 

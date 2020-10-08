@@ -21,6 +21,7 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
 });
 
 UserSchema.plugin(uniqueValidator);
@@ -30,4 +31,5 @@ export interface User extends mongoose.Document {
   email: string;
   password: string;
   image: string;
+  products;
 }
