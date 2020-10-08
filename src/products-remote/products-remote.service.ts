@@ -43,6 +43,9 @@ export class ProductsRemoteService {
         description: result.description,
         price: result.price,
         userImage: user.image,
+        name: user.name,
+        date: result.date,
+        email: user.email,
       };
     }
 
@@ -71,6 +74,9 @@ export class ProductsRemoteService {
             description: prod.description,
             price: prod.price,
             userImage: user.image,
+            name: user.name,
+            date: prod.date,
+            email: user.email,
           };
         }
       }),
@@ -130,6 +136,9 @@ export class ProductsRemoteService {
         description: updatedProduct.description,
         price: updatedProduct.price,
         userImage: user.image,
+        name: user.name,
+        date: updatedProduct.date,
+        email: user.email,
       };
     }
   }
